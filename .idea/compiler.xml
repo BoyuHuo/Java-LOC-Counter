@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Java-LOC-counter" target="1.5" />
+      <module name="Java-LOC-counter" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>

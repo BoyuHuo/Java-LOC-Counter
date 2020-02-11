@@ -23,18 +23,27 @@ public class FileManager {
      * 　　*
      */
     public static void findFile(File dir) throws IOException {
-        File[] dirFiles = dir.listFiles();
-        for (File temp : dirFiles) {
-            if (!temp.isFile()) {
-                findFile(temp);
-            }
-
-            if (temp.isFile() && temp.getAbsolutePath().endsWith(".java")) {
+        if(dir.isFile()){
+            if (dir.getAbsolutePath().endsWith(".java")) {
                 javaFileNum++;
                 uniqueJavaFileNum++;
-                readFileContent(temp);
+                readFileContent(dir);
+            }
+        } else {
+            File[] dirFiles = dir.listFiles();
+            for (File temp : dirFiles) {
+                if (!temp.isFile()) {
+                    findFile(temp);
+                }
+
+                if (temp.isFile() && temp.getAbsolutePath().endsWith(".java")) {
+                    javaFileNum++;
+                    uniqueJavaFileNum++;
+                    fileList.add(readFileContent(temp));
+                }
             }
         }
+
     }
 
     /**
@@ -52,6 +61,7 @@ public class FileManager {
         boolean isSectionComments = false;
         while (br.ready()) {
             String tempStr = br.readLine().trim();
+            fd.setContent(fd.getContent()+tempStr);
             if (tempStr.length() < 1) {
                 blankLineNum++;
             } else if (isSectionComments) {
@@ -68,24 +78,30 @@ public class FileManager {
                 lineOfLogicCode++;
             }
         }
+        fd.setSize(fd.getContent().length());
         return fd;
     }
 
-/*
-    public static void main(String[] args) {
-        try {
-            findFile(new File(basePath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        printResult();
-
+    public static void checkUniqueness(){
+        fileList.stream().forEach(file -> {
+            file.repeatFlag = true;
+            for(FileDetail f : fileList){
+                if(f.repeatFlag){
+                    continue;
+                }
+                if(file.getSize()==f.getSize()){  //optimation, if the size is different then pass, it never gonna be the same
+                    if(file.getContent().equals(f.getContent())){
+                        f.repeatFlag = true;
+                        uniqueJavaFileNum--;
+                        System.out.println(uniqueJavaFileNum);
+                    }
+                };
+            }
+        });
     }
 
- */
-
     public static void printResult() {
+        checkUniqueness();
         System.out.println(javaFileNum + "-" + uniqueJavaFileNum + "-" + blankLineNum + "-" + commentsLineNum + "-" + lineOfLogicCode);
     }
 }
