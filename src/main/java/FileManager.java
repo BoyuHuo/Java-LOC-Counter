@@ -68,13 +68,18 @@ public class FileManager {
                 commentsLineNum++;
                 if (tempStr.endsWith("*/")) {
                     isSectionComments = false;
+
                 }
             } else if (tempStr.startsWith("//")) {
                 commentsLineNum++;
-            } else if (tempStr.startsWith("/*")) {
+            }
+            else if (tempStr.startsWith("/*")) {
                 commentsLineNum++;
-                isSectionComments = true;
-            } else {
+                if(!tempStr.endsWith("*/")){
+                    isSectionComments = true;
+                }
+            }
+            else {
                 lineOfLogicCode++;
             }
         }
